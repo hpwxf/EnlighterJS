@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EnlighterJS Single Theme</title>
+
+    <!-- EnlighterJS CSS - Just Include a single theme !-->
+    <link rel="stylesheet" href="../dist/enlighterjs.min.css" />
+</head>
+<body>
+
+    <main>
+        <!-- Code to highlight -->
+        <pre data-enlighter-language="scala">
+import scala.collection.immutable.{Set, Seq}
+
+sealed trait Visitor {
+  type Id = Int
+  def id: Int
+}
+
+final case class Anonymous(id: Visitor#Id) extends Visitor
+final case class User(id: Visitor#Id, var email: String) extends Visitor
+
+object Visitor {
+  def info(visitor: Visitor): Unit = {
+    visitor match {
+      case User(id, email) => println(s"User with id ${id} and email ${email}")
+      case Anonymous(_) => println("Anonymous")
+      case _ => println("Undefined visitor")
+    }
+  }
+}
+
+val n : Int = 10
+// var usage : bad practice
+var x: Visitor = User(10, "me@gmail.com")
+Visitor.info(x)
+
+/**
+ * Classical template function
+ * @param elements : set of elements
+ * @return elements count
+ */
+def count1[T](elements: Set[T]): Int = elements.size
+@deprecated("deprecation message", "old forSome syntax")
+def count2(elements: Set[T] forSome {type T}): Int = elements.size
+def count3(elements: Set[_]): Int = elements.size
+def sum[T<%Double](elements: Set[T]): Double = (0.0 /: elements)((d1,d2) => d1 + d2)
+sum(Set[Int](1,2,3))
+sum(elements = Set[Float](1.0f,2.5f))
+
+class Stack[+T] {
+  def push[S >: T](elem: S): Stack[S] = new Stack[S] {
+    override def top: S = elem
+    override def pop: Stack[S] = Stack.this // this usage
+    override def toString: String =
+      elem.toString + " " + Stack.this.toString
+  }
+  def top: T = sys.error("no element on stack")
+  def pop: Stack[T] = sys.error("no element on stack")
+  override def toString: String = ""
+}
+
+// var usage : bad practice
+var s: Stack[Any] = new Stack().push("hello")
+// control statements
+for( a <- 1 to 3; b <- 1 to 3) {
+  if (a < 2) {
+    // Method call with dot syntax
+    s = s.push(new Object())
+  } else if (true != false) {
+    // method call without dot syntax
+    s = s push 7
+  }
+}
+
+val lowerConst = "lower"
+val UpperConst = "UPPER"
+
+for (i <- Seq(lowerConst, UpperConst, "should mismatch.").map(Option.apply)) {
+  print("Input '%s' results in: ".format(i)) // direct method call from literal
+  i match {
+    case Some(UpperConst) => println("UPPER!!!") // variable expanded as value
+    case Some(`lowerConst`) => println("lower!") // variable expanded as value
+    case Some(lowerConst) => println("any Some(_) match!") // local variable match
+    case _ => println("mismatch!")
+  }
+}
+        </pre>
+
+    </main>
+
+    <!-- EnlighterJS -->
+    <script type="text/javascript" src="../dist/enlighterjs.min.js"></script>
+
+    <!-- Init Code -->
+    <script type="text/javascript">
+        // - highlight all pre + code tags (CSS3 selectors)
+        // - use javascript as default language
+        // - use theme "enlighter" as default theme
+        // - replace tabs with 2 spaces
+        EnlighterJS.init('pre', 'code', {
+                language : 'scala',
+                theme: 'dracula-jetbrains',
+                indent : 2
+        });
+    </script>
+</body>
+</html>
